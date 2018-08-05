@@ -5,6 +5,7 @@ require('dotenv').config({
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const security = require('./security');
 
 mongoose.connect(process.env.CONNECTION_STRING, {
   useNewUrlParser: true
@@ -12,9 +13,17 @@ mongoose.connect(process.env.CONNECTION_STRING, {
 
 
 const placesRouter = require('./routes/places');
+const usersRouter = require('./routes/users');
+const authRouter = require('./routes/auth');
+
+
 const app = express();
 
 app.use(bodyParser.json());
-app.use('/places', placesRouter);
+
+app.use('/places', security.verifyToken, placesRouter);
+app.use('/users', security.verifyToken, usersRouter);
+app.use('/auth', authRouter);
+
 
 app.listen(process.env.PORT, function () {});
