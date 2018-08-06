@@ -1,10 +1,13 @@
-const express = require('express');
-const security = require('../security');
-const usersController = require('../controllers/usersController');
+const express = require("express");
+const { OAuth2Client } = require("google-auth-library");
+const security = require("../security");
+const usersController = require("../controllers/usersController");
 const authRouter = express.Router();
 
-authRouter.post('/signup', function (req, res) {
-  usersController.create(req.body, function (err, user) {
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+authRouter.post("/signup", function(req, res) {
+  usersController.create(req.body, function(err, user) {
     if (err) {
       return res.send(err.message);
     }
@@ -15,12 +18,33 @@ authRouter.post('/signup', function (req, res) {
   });
 });
 
-authRouter.post('/signin', function (req, res) {
+authRouter.post("/google", function(req, res) {
+  let googleAccessToken = req.body.accessToken;
+  let googleUserId = req.body.userId;
+  client.verifyIdToken(
+    {
+      idToken: googleAccessToken,
+      audience: process.env.GOOGLE_CLIENT_ID
+    },
+    function(err, user) {
+      if (err) {
+        res.status(401);
+        return res.send('Google Token not valid');
+      }
+      
+
+      res.send("QDS");
+    }
+  );
+});
+
+authRouter.post("/signin", function(req, res) {
   const userEmail = req.body.email;
   const userPassword = req.body.password;
 
-  usersController.getByEmail(userEmail, function (err, user) {
+  usersController.getByEmail(userEmail, function(err, user) {
     if (err) {
+      res.status(500);
       return res.send(err.message);
     }
 
@@ -31,8 +55,8 @@ authRouter.post('/signin', function (req, res) {
         });
       }
     }
-
-    res.send('notFound').statusCode(404);
+    res.status(404);
+    res.send("notFound");
   });
 });
 

@@ -3,11 +3,19 @@ const crypto = require('crypto');
 
 const Schema = mongoose.Schema;
 
+let oauthAccount =  new Schema({
+  userId: String,
+  accessToken: String,
+  refreshToken: String,
+  platform: String
+}, {_id: false});
+
 const UserSchema = new Schema({
   firstName: String,
   lastName: String,
   email: String,
   password: String,
+  authAccounts: [oauthAccount],
   age: String
 });
 
