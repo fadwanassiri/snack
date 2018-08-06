@@ -26,6 +26,17 @@ placesRouter.get('/:placeId', function (req, res) {
   });
 });
 
+placesRouter.get('', function (req, res) {
+
+  placesController.getList(function (err, places) {
+    if (err) {
+      return res.send(err.message);
+    }
+
+    res.send(places);
+  });
+});
+
 placesRouter.patch('/:placeId', function (req, res) {
   const placeId = req.params.placeId;
 

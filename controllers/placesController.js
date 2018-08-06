@@ -9,6 +9,9 @@ const placesController = {
   getById(placeId, callback) {
     Place.findById(placeId, callback);
   },
+  getList(callback) {
+    Place.find({}, callback);
+  }, //{ field: { $in: [<value1>, <value2>, ... <valueN> ] } }
   create(place, callback) {
     let newPlace = new Place(place);
 
